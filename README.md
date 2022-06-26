@@ -7,7 +7,7 @@ It can be run multiple times on the same machine safely. It installs, upgrades, 
 
 ## Install
 
-Download the script:
+Download the repo:
 
 ```sh
 git clone git@github.com:asknicely/formation.git && cd formation
