@@ -11,3 +11,4 @@ rbenv
 terraform
 wget
 yarn
+python-setuptools
