@@ -574,10 +574,10 @@ install_application_via_brew() {
     # Homebrew doesn't handle alternative methods well and errors if it tries to install an app that is already there
     # So we query the brew API and use JQ to process the JSON and get the final file name for the target app.
     # We use this filename to check the Applications dir and see if the app is installed by something other than brew.
-    query='.artifacts | map(select(type == "array")) | .[] | map(select(type == "string")) | .[] | select(endswith(".app"))'
-    appname=$(curl -s "https://formulae.brew.sh/api/cask/$cask.json" | jq -r "${query}")
+    query='.artifacts[]|..|select(endswith(".app"))?'
+    appname=$(curl -s "https://formulae.brew.sh/api/cask/$cask.json" | jq -r "${query}" | sed 's/\/Applications\///g' )
     appdir='/Applications'
-
+    
     if [[ ! $(brew list --cask | grep -w $cask) ]]; then
       if [ ! -z "$appname" ] &&  [ -e "${appdir}/${appname}" ]; then
         print_success "$cask already installed via a non-brew process (e.g. manually). Skipped."
