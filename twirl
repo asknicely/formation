@@ -602,10 +602,17 @@ uninstall_application_via_brew() {
 }
 
 install_application_via_app_store() {
+    appdir='/Applications'
+    
 	if ! mas list | grep $1 &> /dev/null; then
-		echo_install "Installing $2"
-		mas install $1 >/dev/null
-		print_in_green "${bold}✓ installed!${normal}\n"
+        if [ ! -z "$2" ] &&  [ -e "${appdir}/${2}.app" ]; then
+            print_success_muted "$2 already manually installed. Skipped."
+        else
+            echo_install "Installing $2"
+            mas install $1 >/dev/null
+            print_in_green "${bold}✓ installed!${normal}\n"
+        
+        fi
 	else
 		print_success_muted "$2 already installed. Skipped."
 	fi
