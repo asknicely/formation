@@ -577,7 +577,7 @@ install_application_via_brew() {
     query='.artifacts[]|..|select(endswith(".app"))?'
     appname=$(curl -s "https://formulae.brew.sh/api/cask/$cask.json" | jq -r "${query}" | sed 's/\/Applications\///g' )
     appdir='/Applications'
-    
+
     if [[ ! $(brew list --cask | grep -w $cask) ]]; then
       if [ ! -z "$appname" ] &&  [ -e "${appdir}/${appname}" ]; then
         print_success "$cask already installed via a non-brew process (e.g. manually). Skipped."
