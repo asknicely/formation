@@ -574,8 +574,8 @@ install_application_via_brew() {
     # Homebrew doesn't handle alternative methods well and errors if it tries to install an app that is already there
     # So we query the brew API and use JQ to process the JSON and get the final file name for the target app.
     # We use this filename to check the Applications dir and see if the app is installed by something other than brew.
-    query='.artifacts | map(select(type == "array")) | .[] | map(select(type == "string")) | .[] | select(endswith(".app"))'
-    appname=$(curl -s "https://formulae.brew.sh/api/cask/$cask.json" | jq -r "${query}")
+    query='.artifacts[]|..|select(endswith(".app"))?'
+    appname=$(curl -s "https://formulae.brew.sh/api/cask/$cask.json" | jq -r "${query}" | sed 's/\/Applications\///g' )
     appdir='/Applications'
 
     if [[ ! $(brew list --cask | grep -w $cask) ]]; then
@@ -602,10 +602,17 @@ uninstall_application_via_brew() {
 }
 
 install_application_via_app_store() {
+    appdir='/Applications'
+    
 	if ! mas list | grep $1 &> /dev/null; then
-		echo_install "Installing $2"
-		mas install $1 >/dev/null
-		print_in_green "${bold}✓ installed!${normal}\n"
+        if [ ! -z "$2" ] &&  [ -e "${appdir}/${2}.app" ]; then
+            print_success_muted "$2 already manually installed. Skipped."
+        else
+            echo_install "Installing $2"
+            mas install $1 >/dev/null
+            print_in_green "${bold}✓ installed!${normal}\n"
+        
+        fi
 	else
 		print_success_muted "$2 already installed. Skipped."
 	fi
