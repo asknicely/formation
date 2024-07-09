@@ -108,7 +108,7 @@ touch ~/.zprofile
 # NVM - We don't need to check if installed. Re-running is harmless
 # -----------------------------------------------------------------------------
 step "Installing/Updating NVM…"
-curl -s https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash  > /dev/null
+curl -s https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash  > /dev/null
 source ~/.zshrc
 source $NVM_DIR/nvm.sh
 print_success "NVM installed!"
