@@ -179,34 +179,25 @@ brew cleanup 2> /dev/null
 # INSTALL: Mac App Store Apps
 ###############################################################################
 chapter "Installing apps from App Store…"
-if [ -x mas ]; then
-
-	print_warning "Please install mas-cli first: brew mas. Skipping."
-
-	else
-
-	if [ -e $cwd/swag/apps ]; then
-		if mas_setup; then
-			# Workaround for associative array in Bash 3
-			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
-			for app in $(<$cwd/swag/apps); do
-				KEY="${app%%::*}"
-				VALUE="${app##*::}"
-				install_application_via_app_store $KEY $VALUE
-			done
-		else
-			print_warning "Please signin to App Store first. Skipping."
-		fi
-	fi
-
+if ! command -v mas &> /dev/null; then
+    print_warning "Please install mas-cli first: brew install mas. Skipping."
+else
+    if [ -e "$cwd/swag/apps" ]; then
+        while IFS= read -r app; do
+            KEY="${app%%::*}"
+            VALUE="${app##*::}"
+            echo "Installing $VALUE ($KEY)…"
+            mas install "$KEY" || echo "⚠️ Failed to install $VALUE ($KEY)"
+        done < "$cwd/swag/apps"
+    fi
 fi
 
 # -----------------------------------------------------------------------------
-# Node 18 - We need this version for mobile (as of 29/07/2024)
+# Node 20 - We need this version for mobile (as of 2025)
 # -----------------------------------------------------------------------------
-step "Installing Node 18…"
-nvm install 18 > /dev/null
-nvm use 18 > /dev/null
+step "Installing Node 20…"
+nvm install 20 > /dev/null
+nvm use 20 > /dev/null
 nvm run node --version > /dev/null
 nodev=$(node -v)
 print_success "Using Node $nodev!"
@@ -236,7 +227,6 @@ if [[ ! $(php --version | grep "PHP 8.2") ]]; then
 
   echo_install "Installing php@8.2"
   brew tap shivammathur/php
-  brew install shivammathur/php/php@7.4 > /dev/null
   brew install shivammathur/php/php@8.2 > /dev/null
   brew install shivammathur/php/php@8.3 > /dev/null
 
