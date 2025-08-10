@@ -197,8 +197,9 @@ fi
 # -----------------------------------------------------------------------------
 step "Installing Node 20…"
 nvm install 20 > /dev/null
+nvm alias default 20 > /dev/null
 nvm use 20 > /dev/null
-nvm run node --version > /dev/null
+node --version > /dev/null
 nodev=$(node -v)
 print_success "Using Node $nodev!"
 
